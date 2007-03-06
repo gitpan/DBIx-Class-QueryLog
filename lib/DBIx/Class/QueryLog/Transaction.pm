@@ -12,6 +12,18 @@ use Sort::Key;
 
 DBIx::Class::QueryLog::Transaction - A Transaction
 
+=head1 SYNOPSIS
+
+Represents a transaction.  All queries executed with the context of this
+transaction are stored herein, as well as a start time, end time and flag
+for committed or rolledback.
+
+=head1 METHODS
+
+=head2 new
+
+Create a new DBIx::Class::QueryLog::Transcation
+
 =cut
 
 sub new {
@@ -22,15 +34,6 @@ sub new {
 	
 	return $self;
 }
-
-
-=head1 SYNOPSIS
-
-Represents a transaction.  All queries executed with the context of this
-transaction are stored herein, as well as a start time, end time and flag
-for committed or rolledback.
-
-=head1 METHODS
 
 =head2 queries
 

@@ -21,7 +21,7 @@ Version 0.01
 
 =cut
 
-our $VERSION = '0.01';
+our $VERSION = '0.02';
 
 =head1 SYNOPSIS
 
@@ -50,6 +50,10 @@ a transaction are stored inside their Transaction object, not inside the
 QueryLog directly.
 
 =head1 METHODS
+
+=head2 new
+
+Create a new DBIx::Class::QueryLog.
 
 =cut
 sub new {
@@ -118,12 +122,6 @@ sub reset {
 	my $self = shift();
 	
 	$self->log(undef);
-}
-
-sub report {
-	my $self = shift();
-	
-	print Dumper($self);
 }
 
 =head2 add_to_log
