@@ -1,5 +1,9 @@
 Revision history for DBIx-Class-QueryLog
 
+0.03	Fri Mar 09 18:18:45 2007
+		Remove OS X resource fork files (thanks jshirley)
+		Add a missing dependency (Sort::Key)
+
 0.02	Mon Mar 06 23:06:21 2007
 		Update POD to pass POD coverage tests.
 

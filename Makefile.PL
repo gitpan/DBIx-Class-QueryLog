@@ -12,7 +12,8 @@ WriteMakefile(
         'Test::More'		=> 0,
 		'Class::Accessor'	=> 0,
 		'Time::HiRes'		=> 0,
-		'DBIx::Class'		=> 0
+		'DBIx::Class'		=> 0,
+		'Sort::Key'			=> 0,
     },
     dist                => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },
     clean               => { FILES => 'DBIx-Class-QueryLog-*' },
