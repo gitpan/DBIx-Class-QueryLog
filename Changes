@@ -1,5 +1,10 @@
 Revision history for DBIx-Class-QueryLog
 
+1.0.0  Mon Aug 30 19:22:11 2007
+    Remove Sort::Key dependency
+    Add documentation for a couple of Query methods
+    Add Analyzer and move get_sorted_queries to same
+
 0.03	Fri Mar 09 18:18:45 2007
 		Remove OS X resource fork files (thanks jshirley)
 		Add a missing dependency (Sort::Key)

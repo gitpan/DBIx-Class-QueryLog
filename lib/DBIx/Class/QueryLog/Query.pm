@@ -26,6 +26,14 @@ Time this query started.
 
 Time this query ended.
 
+=head2 sql
+
+SQL for this query.
+
+=head2 params
+
+Parameters used with this query.
+
 =head2 time_elapsed
 
 Time this query took to execute.  start - end.
@@ -34,7 +42,7 @@ Time this query took to execute.  start - end.
 
 sub time_elapsed {
 	my $self = shift();
-	
+
 	return $self->end_time() - $self->start_time();
 }
 
@@ -45,8 +53,19 @@ queries executed.
 
 =cut
 sub count {
-    
+
     return 1;
+}
+
+=head2 queries
+
+Returns this query, here to make QueryLog's job easier.
+
+=cut
+sub queries {
+    my $self = shift();
+
+    return [ $self ];
 }
 
 =head2 get_sorted_queries
@@ -56,7 +75,7 @@ Returns this query.  Here to make QueryLog's job easier.
 =cut
 sub get_sorted_queries {
     my $self = shift();
-    
+
     return [ $self ];
 }
 

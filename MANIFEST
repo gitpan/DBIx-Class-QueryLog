@@ -1,12 +1,25 @@
 Changes
-MANIFEST
-META.yml # Will be created by "make dist"
-Makefile.PL
-README
+inc/Module/AutoInstall.pm
+inc/Module/Install.pm
+inc/Module/Install/AutoInstall.pm
+inc/Module/Install/Base.pm
+inc/Module/Install/Can.pm
+inc/Module/Install/Fetch.pm
+inc/Module/Install/Include.pm
+inc/Module/Install/Makefile.pm
+inc/Module/Install/Metadata.pm
+inc/Module/Install/Win32.pm
+inc/Module/Install/WriteAll.pm
 lib/DBIx/Class/QueryLog.pm
+lib/DBIx/Class/QueryLog/Analyzer.pm
 lib/DBIx/Class/QueryLog/Query.pm
 lib/DBIx/Class/QueryLog/Transaction.pm
+Makefile.PL
+MANIFEST			This list of files
+META.yml
+README
 t/00-load.t
 t/01-quickies.t
+t/02-analyzer.t
 t/pod-coverage.t
 t/pod.t

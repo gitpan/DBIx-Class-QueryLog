@@ -6,8 +6,6 @@ use strict;
 use base qw(Class::Accessor);
 __PACKAGE__->mk_accessors(qw(start_time end_time queries committed rolledback));
 
-use Sort::Key;
-
 =head1 NAME
 
 DBIx::Class::QueryLog::Transaction - A Transaction
@@ -31,7 +29,7 @@ sub new {
     my $self = $proto->SUPER::new(@_);
 
 	$self->queries([]);
-	
+
 	return $self;
 }
 
@@ -62,12 +60,12 @@ Time this transaction took to execute.  start - end.
 =cut
 sub time_elapsed {
 	my $self = shift();
-	
+
 	my $total = 0;
 	foreach my $q (@{ $self->queries() }) {
 		$total += $q->time_elapsed();
 	}
-	
+
 	return $total;
 }
 
@@ -79,7 +77,7 @@ Add the provided query to this transactions list.
 sub add_to_queries {
 	my $self = shift();
 	my $query = shift();
-	
+
 	push(@{ $self->queries() }, $query);
 }
 
@@ -90,7 +88,7 @@ Returns the number of queries in this Transaction
 =cut
 sub count {
     my $self = shift();
-    
+
     return scalar(@{ $self->queries() });
 }
 
@@ -101,7 +99,7 @@ Returns all the queries in this Transaction, sorted by elapsed time. (descending
 =cut
 sub get_sorted_queries {
     my $self = shift();
-    
+
     return [ reverse sort { $a->time_elapsed() <=> $b->time_elapsed() } @{ $self->queries() } ];
 }
 
