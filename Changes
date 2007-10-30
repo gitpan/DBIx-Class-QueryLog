@@ -1,5 +1,8 @@
 Revision history for DBIx-Class-QueryLog
 
+1.0.1  ---
+    Remove Sort::Key, since it's not used (thanks nigel)
+
 1.0.0  Mon Aug 30 19:22:11 2007
     Remove Sort::Key dependency
     Add documentation for a couple of Query methods

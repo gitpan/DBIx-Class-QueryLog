@@ -6,8 +6,6 @@ use strict;
 use base qw(Class::Accessor);
 __PACKAGE__->mk_accessors(qw(querylog));
 
-use Sort::Key;
-
 =head1 NAME
 
 DBIx::Class::QueryLog::Analyzer - Query Analysis
