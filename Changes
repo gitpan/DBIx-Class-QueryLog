@@ -1,6 +1,9 @@
 Revision history for DBIx-Class-QueryLog
 
-1.0.1  ---
+1.0.2
+    Added passthrough option to get queries printing to debugfh like normal (ash)
+
+1.0.1  Tues Aug 31 2007
     Remove Sort::Key, since it's not used (thanks nigel)
 
 1.0.0  Mon Aug 30 19:22:11 2007
@@ -8,13 +11,13 @@ Revision history for DBIx-Class-QueryLog
     Add documentation for a couple of Query methods
     Add Analyzer and move get_sorted_queries to same
 
-0.03	Fri Mar 09 18:18:45 2007
-		Remove OS X resource fork files (thanks jshirley)
-		Add a missing dependency (Sort::Key)
+0.03  Fri Mar 09 18:18:45 2007
+    Remove OS X resource fork files (thanks jshirley)
+    Add a missing dependency (Sort::Key)
 
-0.02	Mon Mar 06 23:06:21 2007
-		Update POD to pass POD coverage tests.
+0.02  Mon Mar 06 23:06:21 2007
+    Update POD to pass POD coverage tests.
 
 0.01    Wed Feb 28 10:54:23 2007
-        First version, released on an innocent, unsuspecting world.
+    First version, released on an innocent, unsuspecting world.
 
