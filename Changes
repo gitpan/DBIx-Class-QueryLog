@@ -1,5 +1,8 @@
 Revision history for DBIx-Class-QueryLog
 
+1.0.3
+    Repackaged.
+
 1.0.2
     Added passthrough option to get queries printing to debugfh like normal (ash)
 
