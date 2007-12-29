@@ -1,5 +1,8 @@
 Revision history for DBIx-Class-QueryLog
 
+1.0.4
+    Typo in Analyzer POD
+
 1.0.3
     Repackaged.
 

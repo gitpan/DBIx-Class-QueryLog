@@ -1,9 +1,8 @@
 --- 
 abstract: Log queries for later analysis.
-author: 
-  - Cory 'G' Watson, C<< <gphat at cpan.org> >>
+author: Cory 'G' Watson, C<< <gphat at cpan.org> >>
 distribution_type: module
-generated_by: Module::Install version 0.680
+generated_by: Module::Install version 0.670
 license: perl
 meta-spec: 
   url: http://module-build.sourceforge.net/META-spec-v1.3.html
@@ -18,4 +17,4 @@ requires:
   DBIx::Class: 0
   Test::More: 0
   Time::HiRes: 0
-version: 1.0.3
+version: 1.0.4

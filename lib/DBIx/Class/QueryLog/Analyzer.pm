@@ -20,7 +20,7 @@ QueryLog:
     $schema->storage->debugobj($ql);
     $schema->storage->debug(1);
     ... # do some stuff!
-    my $ana = DBIx::Class::QueryLog::Analyzer({ querylog => $ql });
+    my $ana = new DBIx::Class::QueryLog::Analyzer({ querylog => $ql });
     my @queries = $ana->get_sorted_queries();
     # or...
     my $totaled = $ana->get_totaled_queries();
