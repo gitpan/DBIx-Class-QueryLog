@@ -1,5 +1,13 @@
 Revision history for DBIx-Class-QueryLog
 
+1.1.0
+    - Add buckets to QueryLog
+    - Transaction complete wasn't using add_to_log
+    - Small style fixes
+
+1.0.5
+	  Update main POD to use Analyzer
+
 1.0.4
     Typo in Analyzer POD
 

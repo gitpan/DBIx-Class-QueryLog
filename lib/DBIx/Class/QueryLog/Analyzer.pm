@@ -16,14 +16,14 @@ Analyzes the results of a QueryLog.  Create an Analyzer and pass it the
 QueryLog:
 
     my $schema = ... # Get your schema!
-    my $ql = new DBIx::Class::QueryLog();
+    my $ql = DBIx::Class::QueryLog->new;
     $schema->storage->debugobj($ql);
     $schema->storage->debug(1);
     ... # do some stuff!
-    my $ana = new DBIx::Class::QueryLog::Analyzer({ querylog => $ql });
-    my @queries = $ana->get_sorted_queries();
+    my $ana = DBIx::Class::QueryLog::Analyzer->new({ querylog => $ql });
+    my @queries = $ana->get_sorted_queries;
     # or...
-    my $totaled = $ana->get_totaled_queries();
+    my $totaled = $ana->get_totaled_queries;
 
 
 =head1 METHODS
@@ -35,7 +35,7 @@ Create a new DBIx::Class::QueryLog::Analyzer
 =cut
 
 sub new {
-    my $proto = shift();
+    my $proto = shift;
     my $self = $proto->SUPER::new(@_);
 
     return $self;
@@ -48,17 +48,17 @@ Returns a list of all Query objects, sorted by elapsed time (descending).
 =cut
 
 sub get_sorted_queries {
-    my $self = shift();
+    my ($self) = @_;
 
     my @queries;
 
-    foreach my $l (@{ $self->querylog->log() }) {
-        push(@queries, @{ $l->get_sorted_queries() });
+    foreach my $l (@{ $self->querylog->log }) {
+        push(@queries, @{ $l->get_sorted_queries });
     }
-    return [ reverse sort { $a->time_elapsed() <=> $b->time_elapsed() } @queries ];
+    return [ reverse sort { $a->time_elapsed <=> $b->time_elapsed } @queries ];
 }
 
-=head2 get_totaled_queries
+=head2 get_totaled_queries($honor_buckets)
 
 Returns hashref of the queries executed, with same-SQL combined and totaled.
 So if the same query is executed multiple times, it will be combined into
@@ -75,6 +75,23 @@ a single entry.  The structure is:
         }
     }
 
+If you pass a true value then this method will break out by bucket.  The
+structure becomes:
+
+$var = {
+    'bucket1' => {
+        'SQL that was EXECUTED' => {
+            count           => 2,
+            time_elapsed    => 1931,
+            queries         => [
+                DBIx::Class::QueryLog...,
+                DBIx::Class::QueryLog...
+            ]
+        }
+    }
+    'bucket2' => { ... }
+}
+
 This is useful for when you've fine-tuned individually slow queries and need
 to isolate which queries are executed a lot, so that you can determine which
 to focus on next.
@@ -82,7 +99,7 @@ to focus on next.
 To sort it you'll want to use something like this (sorry for the long line, 
 blame perl...):
 
-    my $analyzed = $ana->get_totaled_queries();
+    my $analyzed = $ana->get_totaled_queries;
     my @keys = reverse sort {
             $analyzed->{$a}->{'time_elapsed'} <=> $analyzed->{$b}->{'time_elapsed'}
         } keys(%{ $analyzed });
@@ -92,14 +109,20 @@ So one could sort by count or time_elapsed.
 =cut
 
 sub get_totaled_queries {
-    my $self = shift();
+    my ($self, $honor_buckets) = @_;
 
     my %totaled;
-    foreach my $l (@{ $self->querylog->log() }) {
-        foreach my $q (@{ $l->queries() }) {
-            $totaled{$q->sql()}->{'count'}++;
-            $totaled{$q->sql()}->{'time_elapsed'} += $q->time_elapsed();
-            push(@{ $totaled{$q->sql()}->{'queries'} }, $q);
+    foreach my $l (@{ $self->querylog->log }) {
+        foreach my $q (@{ $l->queries }) {
+            if($honor_buckets) {
+                $totaled{$q->bucket}->{$q->sql}->{count}++;
+                $totaled{$q->bucket}->{$q->sql}->{time_elapsed} += $q->time_elapsed;
+                push(@{ $totaled{$q->bucket}->{$q->sql}->{queries} }, $q);
+            } else {
+                $totaled{$q->sql}->{count}++;
+                $totaled{$q->sql}->{time_elapsed} += $q->time_elapsed;
+                push(@{ $totaled{$q->sql}->{queries} }, $q);
+            }
         }
     }
     return \%totaled;

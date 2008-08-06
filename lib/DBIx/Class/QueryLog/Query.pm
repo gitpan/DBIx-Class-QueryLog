@@ -4,7 +4,7 @@ use warnings;
 use strict;
 
 use base qw(Class::Accessor);
-__PACKAGE__->mk_accessors(qw(start_time end_time sql params));
+__PACKAGE__->mk_accessors(qw(bucket start_time end_time sql params));
 
 =head1 NAME
 
@@ -16,7 +16,9 @@ Represents a query.  The sql, parameters, start time and end time are stored.
 
 =head1 METHODS
 
-=head2 
+=head2 bucket
+
+The bucket this query is in.
 
 =head2 start_time
 
@@ -41,9 +43,9 @@ Time this query took to execute.  start - end.
 =cut
 
 sub time_elapsed {
-	my $self = shift();
+	my $self = shift;
 
-	return $self->end_time() - $self->start_time();
+	return $self->end_time - $self->start_time;
 }
 
 =head2 count
@@ -63,7 +65,7 @@ Returns this query, here to make QueryLog's job easier.
 
 =cut
 sub queries {
-    my $self = shift();
+    my $self = shift;
 
     return [ $self ];
 }
@@ -74,7 +76,7 @@ Returns this query.  Here to make QueryLog's job easier.
 
 =cut
 sub get_sorted_queries {
-    my $self = shift();
+    my $self = shift;
 
     return [ $self ];
 }

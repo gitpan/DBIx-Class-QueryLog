@@ -4,7 +4,7 @@ use warnings;
 use strict;
 
 use base qw(Class::Accessor);
-__PACKAGE__->mk_accessors(qw(start_time end_time queries committed rolledback));
+__PACKAGE__->mk_accessors(qw(bucket start_time end_time queries committed rolledback));
 
 =head1 NAME
 
@@ -25,13 +25,17 @@ Create a new DBIx::Class::QueryLog::Transcation
 =cut
 
 sub new {
-    my $proto = shift();
+    my $proto = shift;
     my $self = $proto->SUPER::new(@_);
 
 	$self->queries([]);
 
 	return $self;
 }
+
+=head2 bucket
+
+The bucket this tranaction is in.
 
 =head2 queries
 
@@ -59,11 +63,11 @@ Time this transaction took to execute.  start - end.
 
 =cut
 sub time_elapsed {
-	my $self = shift();
+	my $self = shift;
 
 	my $total = 0;
-	foreach my $q (@{ $self->queries() }) {
-		$total += $q->time_elapsed();
+	foreach my $q (@{ $self->queries }) {
+		$total += $q->time_elapsed;
 	}
 
 	return $total;
@@ -75,10 +79,10 @@ Add the provided query to this transactions list.
 
 =cut
 sub add_to_queries {
-	my $self = shift();
-	my $query = shift();
+	my $self = shift;
+	my $query = shift;
 
-	push(@{ $self->queries() }, $query);
+	push(@{ $self->queries }, $query);
 }
 
 =head2 count
@@ -87,9 +91,9 @@ Returns the number of queries in this Transaction
 
 =cut
 sub count {
-    my $self = shift();
+    my $self = shift;
 
-    return scalar(@{ $self->queries() });
+    return scalar(@{ $self->queries });
 }
 
 =head2 get_sorted_queries
@@ -98,9 +102,9 @@ Returns all the queries in this Transaction, sorted by elapsed time. (descending
 
 =cut
 sub get_sorted_queries {
-    my $self = shift();
+    my $self = shift;
 
-    return [ reverse sort { $a->time_elapsed() <=> $b->time_elapsed() } @{ $self->queries() } ];
+    return [ reverse sort { $a->time_elapsed <=> $b->time_elapsed } @{ $self->queries } ];
 }
 
 =head1 AUTHOR

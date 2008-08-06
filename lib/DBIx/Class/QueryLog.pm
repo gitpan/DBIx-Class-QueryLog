@@ -4,8 +4,9 @@ use warnings;
 use strict;
 
 use base qw(DBIx::Class::Storage::Statistics);
-__PACKAGE__->mk_group_accessors(simple => qw(log current_transaction current_query passthrough));
-
+__PACKAGE__->mk_group_accessors(simple => qw(
+    bucket current_transaction current_query log  passthrough
+));
 
 use Time::HiRes;
 
@@ -16,13 +17,9 @@ use DBIx::Class::QueryLog::Transaction;
 
 DBIx::Class::QueryLog - Log queries for later analysis.
 
-=head1 VERSION
-
-Version 1.0.4
-
 =cut
 
-our $VERSION = '1.0.4';
+our $VERSION = '1.1.0';
 
 =head1 SYNOPSIS
 
@@ -31,12 +28,15 @@ analyze what happened in the 'session'.  It must be installed as the debugobj
 in DBIx::Class:
 
     use DBIx::Class::QueryLog;
+    use DBIx::Class::QueryLog::Analyzer;
     
     my $schema = ... # Get your schema!
-    my $ql = new DBIx::Class::QueryLog();
+    my $ql = DBIx::Class::QueryLog->new;
     $schema->storage->debugobj($ql);
     $schema->storage->debug(1);
       ... # do some stuff!
+    my $ana = DBIx::Class::QueryLog::Analyzer({ querylog => $ql })->new;
+    my @queries = $ana->get_sorted_queries;
 
 Every transaction and query executed will have a corresponding Transaction
 and Query object stored in order of execution, like so:
@@ -46,7 +46,7 @@ and Query object stored in order of execution, like so:
     Transaction
     Query
 
-This array can be retrieved with the log() method.  Queries executed inside
+This array can be retrieved with the log method.  Queries executed inside
 a transaction are stored inside their Transaction object, not inside the
 QueryLog directly.
 
@@ -56,6 +56,23 @@ of a QueryLog session.
 If you wish to have the QueryLog collecting results, and the normal trace
 output of SQL queries from DBIx::Class, then set C<passthru> to 1
 
+=head1 BUCKETS
+
+Sometimes you want to break your analysis down into stages.  To segregate the
+queries and transactions, simply set the bucket and run some queries:
+
+  $ql->bucket('selects');
+  $schema->resultset('Foo')->find(..);
+  # Some queries
+  $ql->bucket('updates');
+  $foo->update({ name => 'Gorch' });
+  $ql->bucket('something else);
+  ...
+
+Any time a query or transaction is completed the QueryLog's current bucket
+will be copied into it so that the Analyzer can later use it.  See
+the get_totaled_queries method and it's optional parameter.
+
 =head1 METHODS
 
 =head2 new
@@ -64,13 +81,19 @@ Create a new DBIx::Class::QueryLog.
 
 =cut
 sub new {
-    my $proto = shift();
+    my $proto = shift;
     my $self = $proto->SUPER::new(@_);
 
     $self->log([]);
+    $self->bucket('default');
 
     return $self;
 }
+
+=head2 bucket
+
+Set the current bucket for this QueryLog.  This bucket will be copied to any
+transactions or queries that finish.
 
 =head2 time_elapsed
 
@@ -78,11 +101,11 @@ Returns the total time elapsed for ALL transactions and queries in this log.
 
 =cut
 sub time_elapsed {
-    my $self = shift();
+    my $self = shift;
 
     my $total = 0;
-    foreach my $t (@{ $self->log() }) {
-        $total += $t->time_elapsed();
+    foreach my $t (@{ $self->log }) {
+        $total += $t->time_elapsed;
     }
 
     return $total;
@@ -94,11 +117,11 @@ Returns the number of queries executed in this QueryLog
 
 =cut
 sub count {
-    my $self = shift();
+    my $self = shift;
 
     my $total = 0;
-    foreach my $t (@{ $self->log() }) {
-        $total += $t->count();
+    foreach my $t (@{ $self->log }) {
+        $total += $t->count;
     }
 
     return $total;
@@ -110,7 +133,7 @@ Reset this QueryLog by removing all transcations and queries.
 
 =cut
 sub reset {
-    my $self = shift();
+    my $self = shift;
 
     $self->log(undef);
 }
@@ -121,10 +144,11 @@ Add this provided Transaction or Query to the log.
 
 =cut
 sub add_to_log {
-    my $self = shift();
-    my $thing = shift();
+    my $self = shift;
+    my $thing = shift;
 
-    push(@{ $self->log() }, $thing);
+    $thing->bucket($self->bucket);
+    push(@{ $self->log }, $thing);
 }
 
 =head2 txn_begin
@@ -134,12 +158,12 @@ Called by DBIx::Class when a transaction is begun.
 =cut
 
 sub txn_begin {
-    my $self = shift();
+    my $self = shift;
 
     $self->next::method(@_) if $self->passthrough;
     $self->current_transaction(
-        new DBIx::Class::QueryLog::Transaction({
-            start_time => Time::HiRes::time()
+        DBIx::Class::QueryLog::Transaction->new({
+            start_time => Time::HiRes::time
         })
     );
 }
@@ -151,15 +175,15 @@ Called by DBIx::Class when a transaction is committed.
 =cut
 
 sub txn_commit {
-    my $self = shift();
+    my $self = shift;
 
     $self->next::method(@_) if $self->passthrough;
-    if(defined($self->current_transaction())) {
-        my $txn = $self->current_transaction();
-        $txn->end_time(Time::HiRes::time());
+    if(defined($self->current_transaction)) {
+        my $txn = $self->current_transaction;
+        $txn->end_time(Time::HiRes::time);
         $txn->committed(1);
         $txn->rolledback(0);
-        push(@{ $self->log() }, $txn);
+        $self->add_to_log($txn);
         $self->current_transaction(undef);
     } else {
         warn('Unknown transaction committed.')
@@ -173,12 +197,12 @@ Called by DBIx::Class when a transaction is rolled back.
 =cut
 
 sub txn_rollback {
-    my $self = shift();
+    my $self = shift;
 
     $self->next::method(@_) if $self->passthrough;
-    if(defined($self->current_transaction())) {
-        my $txn = $self->current_transaction();
-        $txn->end_time(Time::HiRes::time());
+    if(defined($self->current_transaction)) {
+        my $txn = $self->current_transaction;
+        $txn->end_time(Time::HiRes::time);
         $txn->committed(0);
         $txn->rolledback(1);
         $self->add_to_log($txn);
@@ -195,14 +219,14 @@ Called by DBIx::Class when a query is begun.
 =cut
 
 sub query_start {
-    my $self = shift();
-    my $sql = shift();
+    my $self = shift;
+    my $sql = shift;
     my @params = @_;
 
     $self->next::method($sql, @params) if $self->passthrough;
     $self->current_query(
-        new DBIx::Class::QueryLog::Query({
-            start_time  => Time::HiRes::time(),
+        DBIx::Class::QueryLog::Query->new({
+            start_time  => Time::HiRes::time,
             sql         => $sql,
             params      => \@params,
         })
@@ -216,13 +240,14 @@ Called by DBIx::Class when a query is completed.
 =cut
 
 sub query_end {
-    my $self = shift();
+    my $self = shift;
 
     $self->next::method(@_) if $self->passthrough;
-    if(defined($self->current_query())) {
-        my $q = $self->current_query();
-        $q->end_time(Time::HiRes::time());
-        if(defined($self->current_transaction())) {
+    if(defined($self->current_query)) {
+        my $q = $self->current_query;
+        $q->end_time(Time::HiRes::time);
+        $q->bucket($self->bucket);
+        if(defined($self->current_transaction)) {
             $self->current_transaction->add_to_queries($q);
         } else {
             $self->add_to_log($q)
