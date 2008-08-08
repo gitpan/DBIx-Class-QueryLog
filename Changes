@@ -1,5 +1,8 @@
 Revision history for DBIx-Class-QueryLog
 
+1.1.1
+    - Add get_(fast|slow)est_query_executions to Analyzer
+
 1.1.0
     - Add buckets to QueryLog
     - Transaction complete wasn't using add_to_log

@@ -96,15 +96,26 @@ sub count {
     return scalar(@{ $self->queries });
 }
 
-=head2 get_sorted_queries
+=head2 get_sorted_queries([ $sql ])
 
-Returns all the queries in this Transaction, sorted by elapsed time. (descending)
+Returns all the queries in this Transaction, sorted by elapsed time.
+(descending).
+
+If given an argument of an SQL statement, only queries matching that statement
+will be considered.
 
 =cut
 sub get_sorted_queries {
-    my $self = shift;
+    my ($self, $sql) = @_;
 
-    return [ reverse sort { $a->time_elapsed <=> $b->time_elapsed } @{ $self->queries } ];
+    my @qs;
+    if($sql) {
+        @qs = grep({ $_->sql eq $sql } @{ $self->queries });
+    } else {
+        @qs = @{ $self->queries };
+    }
+
+    return [ reverse sort { $a->time_elapsed <=> $b->time_elapsed } @qs ];
 }
 
 =head1 AUTHOR

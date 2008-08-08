@@ -58,7 +58,40 @@ sub get_sorted_queries {
     return [ reverse sort { $a->time_elapsed <=> $b->time_elapsed } @queries ];
 }
 
-=head2 get_totaled_queries($honor_buckets)
+=head2 get_fastest_query_executions($sql_statement)
+
+Returns an arrayref of Query objects representing in order of the fastest
+executions of a given statement.  Accepts either SQL or a
+DBIx::Class::QueryLog::Query object.  If given SQL, it must match the executed
+SQL, including placeholders.
+
+  $ana->get_slowest_query_executions("SELECT foo FROM bar WHERE gorch = ?");
+
+=cut
+sub get_fastest_query_executions {
+    my ($self, $sql) = @_;
+
+    my @queries;
+    foreach my $l (@{ $self->querylog->log }) {
+        push(@queries, @{ $l->get_sorted_queries($sql) });
+    }
+
+    return [ sort { $a->time_elapsed <=> $b->time_elapsed } @queries ];
+}
+
+=head2 get_slowest_query_executions($sql_statement)
+
+Opposite of I<get_fastest_query_executions>.  Same arguments.
+
+=cut
+
+sub get_slowest_query_executions {
+    my ($self, $sql) = @_;
+
+    return [ reverse @{ $self->get_fastest_query_executions($sql) } ];
+}
+
+=head2 get_totaled_queries
 
 Returns hashref of the queries executed, with same-SQL combined and totaled.
 So if the same query is executed multiple times, it will be combined into
@@ -74,23 +107,6 @@ a single entry.  The structure is:
             ]
         }
     }
-
-If you pass a true value then this method will break out by bucket.  The
-structure becomes:
-
-$var = {
-    'bucket1' => {
-        'SQL that was EXECUTED' => {
-            count           => 2,
-            time_elapsed    => 1931,
-            queries         => [
-                DBIx::Class::QueryLog...,
-                DBIx::Class::QueryLog...
-            ]
-        }
-    }
-    'bucket2' => { ... }
-}
 
 This is useful for when you've fine-tuned individually slow queries and need
 to isolate which queries are executed a lot, so that you can determine which
@@ -115,14 +131,48 @@ sub get_totaled_queries {
     foreach my $l (@{ $self->querylog->log }) {
         foreach my $q (@{ $l->queries }) {
             if($honor_buckets) {
-                $totaled{$q->bucket}->{$q->sql}->{count}++;
-                $totaled{$q->bucket}->{$q->sql}->{time_elapsed} += $q->time_elapsed;
-                push(@{ $totaled{$q->bucket}->{$q->sql}->{queries} }, $q);
+                return $self->get_totaled_queries_by_bucket;
             } else {
                 $totaled{$q->sql}->{count}++;
                 $totaled{$q->sql}->{time_elapsed} += $q->time_elapsed;
                 push(@{ $totaled{$q->sql}->{queries} }, $q);
             }
+        }
+    }
+    return \%totaled;
+}
+
+=head2 get_totaled_queries_by_bucket
+
+Same as get_totaled_queries, but breaks the totaled queries up by bucket:
+
+$var = {
+    'bucket1' => {
+        'SQL that was EXECUTED' => {
+            count           => 2,
+            time_elapsed    => 1931,
+            queries         => [
+                DBIx::Class::QueryLog...,
+                DBIx::Class::QueryLog...
+            ]
+        }
+    }
+    'bucket2' => { ... }
+}
+
+It is otherwise identical to get_totaled_queries
+
+=cut
+
+sub get_totaled_queries_by_bucket {
+    my ($self) = @_;
+
+    my %totaled;
+    foreach my $l (@{ $self->querylog->log }) {
+        foreach my $q (@{ $l->queries }) {
+            $totaled{$q->bucket}->{$q->sql}->{count}++;
+            $totaled{$q->bucket}->{$q->sql}->{time_elapsed} += $q->time_elapsed;
+            push(@{ $totaled{$q->bucket}->{$q->sql}->{queries} }, $q);
         }
     }
     return \%totaled;

@@ -76,7 +76,15 @@ Returns this query.  Here to make QueryLog's job easier.
 
 =cut
 sub get_sorted_queries {
-    my $self = shift;
+    my ($self, $sql) = @_;
+
+    if(defined($sql)) {
+        if($self->sql eq $sql) {
+            return [ $self ];
+        } else {
+            return [  ];
+        }
+    }
 
     return [ $self ];
 }

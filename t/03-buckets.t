@@ -27,5 +27,5 @@ cmp_ok($ql->log->[0]->bucket, 'eq', 'default', 'first still default bucket');
 my $ana = DBIx::Class::QueryLog::Analyzer->new({
     querylog => $ql
 });
-my $total = $ana->get_totaled_queries(1);
+my $total = $ana->get_totaled_queries_by_bucket;
 cmp_ok(scalar(keys(%{ $total })), '==', 2, '2 buckets');
