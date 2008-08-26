@@ -19,7 +19,7 @@ DBIx::Class::QueryLog - Log queries for later analysis.
 
 =cut
 
-our $VERSION = '1.1.1';
+our $VERSION = '1.1.2';
 
 =head1 SYNOPSIS
 
@@ -35,7 +35,7 @@ in DBIx::Class:
     $schema->storage->debugobj($ql);
     $schema->storage->debug(1);
       ... # do some stuff!
-    my $ana = DBIx::Class::QueryLog::Analyzer({ querylog => $ql })->new;
+    my $ana = DBIx::Class::QueryLog::Analyzer->new({ querylog => $ql });
     my @queries = $ana->get_sorted_queries;
 
 Every transaction and query executed will have a corresponding Transaction
