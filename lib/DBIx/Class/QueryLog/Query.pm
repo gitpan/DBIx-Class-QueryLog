@@ -91,13 +91,13 @@ sub get_sorted_queries {
 
 =head1 AUTHOR
 
-Cory 'G' Watson, C<< <gphat at cpan.org> >>
+Cory G Watson, C<< <gphat at cpan.org> >>
 
 =head1 ACKNOWLEDGEMENTS
 
 =head1 COPYRIGHT & LICENSE
 
-Copyright 2007 Cory 'G' Watson, all rights reserved.
+Copyright 2007 Cory G Watson, all rights reserved.
 
 This program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

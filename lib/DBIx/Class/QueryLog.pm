@@ -19,7 +19,7 @@ DBIx::Class::QueryLog - Log queries for later analysis.
 
 =cut
 
-our $VERSION = '1.1.3';
+our $VERSION = '1.1.4';
 
 =head1 SYNOPSIS
 
@@ -260,7 +260,7 @@ sub query_end {
 
 =head1 AUTHOR
 
-Cory 'G' Watson, C<< <gphat at cpan.org> >>
+Cory G Watson, C<< <gphat at cpan.org> >>
 
 =head1 BUGS
 
@@ -302,7 +302,7 @@ L<http://search.cpan.org/dist/DBIx-Class-QueryLog>
 
 =head1 COPYRIGHT & LICENSE
 
-Copyright 2007 Cory 'G' Watson, all rights reserved.
+Copyright 2007 Cory G Watson, all rights reserved.
 
 This program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.
