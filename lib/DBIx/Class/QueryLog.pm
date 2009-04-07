@@ -19,7 +19,7 @@ DBIx::Class::QueryLog - Log queries for later analysis.
 
 =cut
 
-our $VERSION = '1.1.4';
+our $VERSION = '1.1.5';
 
 =head1 SYNOPSIS
 
@@ -135,7 +135,7 @@ Reset this QueryLog by removing all transcations and queries.
 sub reset {
     my $self = shift;
 
-    $self->log(undef);
+    $self->log([]);
 }
 
 =head2 add_to_log

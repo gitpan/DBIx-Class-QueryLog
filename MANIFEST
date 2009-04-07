@@ -23,5 +23,6 @@ t/01-quickies.t
 t/02-analyzer.t
 t/03-buckets.t
 t/04-fastslow.t
+t/05-reset.t
 t/pod-coverage.t
 t/pod.t

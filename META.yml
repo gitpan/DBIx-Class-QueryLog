@@ -3,7 +3,7 @@ abstract: 'Log queries for later analysis.'
 author:
   - 'Cory G Watson, C<< <gphat at cpan.org> >>'
 distribution_type: module
-generated_by: 'Module::Install version 0.770'
+generated_by: 'Module::Install version 0.79'
 license: perl
 meta-spec:
   url: http://module-build.sourceforge.net/META-spec-v1.4.html
@@ -20,4 +20,4 @@ requires:
   Time::HiRes: 0
 resources:
   license: http://dev.perl.org/licenses/
-version: 1.1.4
+version: 1.1.5
