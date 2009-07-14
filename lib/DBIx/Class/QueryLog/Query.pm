@@ -1,10 +1,30 @@
 package DBIx::Class::QueryLog::Query;
+use Moose;
 
-use warnings;
-use strict;
+has bucket => (
+    is => 'rw',
+    isa => 'Str'
+);
 
-use base qw(Class::Accessor);
-__PACKAGE__->mk_accessors(qw(bucket start_time end_time sql params));
+has end_time => (
+    is => 'rw',
+    isa => 'Num'
+);
+
+has params => (
+    is => 'rw',
+    isa => 'ArrayRef'
+);
+
+has sql => (
+    is => 'rw',
+    isa => 'Str'
+);
+
+has start_time => (
+    is => 'rw',
+    isa => 'Num'
+);
 
 =head1 NAME
 
@@ -97,11 +117,13 @@ Cory G Watson, C<< <gphat at cpan.org> >>
 
 =head1 COPYRIGHT & LICENSE
 
-Copyright 2007 Cory G Watson, all rights reserved.
+Copyright 2009 Cory G Watson, all rights reserved.
 
 This program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.
 
 =cut
+
+__PACKAGE__->meta->make_immutable;
 
 1;

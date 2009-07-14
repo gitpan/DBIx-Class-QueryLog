@@ -1,10 +1,10 @@
 package DBIx::Class::QueryLog::Analyzer;
+use Moose;
 
-use warnings;
-use strict;
-
-use base qw(Class::Accessor);
-__PACKAGE__->mk_accessors(qw(querylog));
+has querylog => (
+    is => 'rw',
+    isa => 'DBIx::Class::QueryLog'
+);
 
 =head1 NAME
 
@@ -31,15 +31,6 @@ QueryLog:
 =head2 new
 
 Create a new DBIx::Class::QueryLog::Analyzer
-
-=cut
-
-sub new {
-    my $proto = shift;
-    my $self = $proto->SUPER::new(@_);
-
-    return $self;
-}
 
 =head2 get_sorted_queries
 
@@ -186,10 +177,13 @@ Cory G Watson C<< <gphat at cpan.org> >>
 
 =head1 COPYRIGHT & LICENSE
 
-Copyright 2007 Cory G Watson, all rights reserved.
+Copyright 2009 Cory G Watson, all rights reserved.
 
 This program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.
 
 =cut
+
+__PACKAGE__->meta->make_immutable;
+
 1;

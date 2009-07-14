@@ -1,5 +1,8 @@
 Revision history for DBIx-Class-QueryLog
 
+1.2.0
+    - Mooseification
+
 1.1.5
     - Correct behavior of reset (thanks to Dmitry Bigunyak)
 

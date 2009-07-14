@@ -1,12 +1,47 @@
 package DBIx::Class::QueryLog;
+use Moose;
+use MooseX::AttributeHelpers;
 
-use warnings;
-use strict;
+has bucket => (
+    is => 'rw',
+    isa => 'Str',
+    default => sub { 'default' }
+);
+
+has current_query => (
+    is => 'rw',
+    isa => 'Maybe[DBIx::Class::QueryLog::Query]'
+);
+
+has current_transaction => (
+    is => 'rw',
+    isa => 'Maybe[DBIx::Class::QueryLog::Transaction]'
+);
+
+has log => (
+    metaclass => 'Collection::Array',
+    is => 'rw',
+    isa => 'ArrayRef',
+    default => sub { [] },
+    provides => {
+        push => 'add_to_log',
+        clear => 'reset'
+    }
+);
+
+has passthrough => (
+    is => 'rw',
+    isa => 'Bool',
+    default => sub { 0 }
+);
+
+before 'add_to_log' => sub {
+    my ($self, $thing) = @_;
+
+    $thing->bucket($self->bucket);
+};
 
 use base qw(DBIx::Class::Storage::Statistics);
-__PACKAGE__->mk_group_accessors(simple => qw(
-    bucket current_transaction current_query log  passthrough
-));
 
 use Time::HiRes;
 
@@ -19,7 +54,7 @@ DBIx::Class::QueryLog - Log queries for later analysis.
 
 =cut
 
-our $VERSION = '1.1.5';
+our $VERSION = '1.2.0';
 
 =head1 SYNOPSIS
 
@@ -79,17 +114,6 @@ the get_totaled_queries method and it's optional parameter.
 
 Create a new DBIx::Class::QueryLog.
 
-=cut
-sub new {
-    my $proto = shift;
-    my $self = $proto->SUPER::new(@_);
-
-    $self->log([]);
-    $self->bucket('default');
-
-    return $self;
-}
-
 =head2 bucket
 
 Set the current bucket for this QueryLog.  This bucket will be copied to any
@@ -131,25 +155,9 @@ sub count {
 
 Reset this QueryLog by removing all transcations and queries.
 
-=cut
-sub reset {
-    my $self = shift;
-
-    $self->log([]);
-}
-
 =head2 add_to_log
 
 Add this provided Transaction or Query to the log.
-
-=cut
-sub add_to_log {
-    my $self = shift;
-    my $thing = shift;
-
-    $thing->bucket($self->bucket);
-    push(@{ $self->log }, $thing);
-}
 
 =head2 txn_begin
 
@@ -262,51 +270,15 @@ sub query_end {
 
 Cory G Watson, C<< <gphat at cpan.org> >>
 
-=head1 BUGS
-
-Please report any bugs or feature requests to
-C<bug-dbix-class-querylog at rt.cpan.org>, or through the web interface at
-L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=DBIx-Class-QueryLog>.
-I will be notified, and then you'll automatically be notified of progress on
-your bug as I make changes.
-
-=head1 SUPPORT
-
-You can find documentation for this module with the perldoc command.
-
-    perldoc DBIx::Class::QueryLog
-
-You can also look for information at:
-
-=over 4
-
-=item * AnnoCPAN: Annotated CPAN documentation
-
-L<http://annocpan.org/dist/DBIx-Class-QueryLog>
-
-=item * CPAN Ratings
-
-L<http://cpanratings.perl.org/d/DBIx-Class-QueryLog>
-
-=item * RT: CPAN's request tracker
-
-L<http://rt.cpan.org/NoAuth/Bugs.html?Dist=DBIx-Class-QueryLog>
-
-=item * Search CPAN
-
-L<http://search.cpan.org/dist/DBIx-Class-QueryLog>
-
-=back
-
-=head1 ACKNOWLEDGEMENTS
-
 =head1 COPYRIGHT & LICENSE
 
-Copyright 2007 Cory G Watson, all rights reserved.
+Copyright 2009 Cory G Watson, all rights reserved.
 
 This program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.
 
 =cut
 
-1; # End of DBIx::Class::QueryLog
+__PACKAGE__->meta->make_immutable;
+
+1;

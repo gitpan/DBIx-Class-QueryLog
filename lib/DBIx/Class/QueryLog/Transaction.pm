@@ -1,10 +1,29 @@
 package DBIx::Class::QueryLog::Transaction;
+use Moose;
+use MooseX::AttributeHelpers;
 
-use warnings;
-use strict;
+extends 'DBIx::Class::QueryLog::Query';
 
-use base qw(Class::Accessor);
-__PACKAGE__->mk_accessors(qw(bucket start_time end_time queries committed rolledback));
+has committed => (
+    is => 'rw',
+    isa => 'Bool'
+);
+
+has queries => (
+    metaclass => 'Collection::Array',
+    is => 'rw',
+    isa => 'ArrayRef',
+    default => sub { [] },
+    provides => {
+        count => 'count',
+        push => 'add_to_queries'
+    }
+);
+
+has rolledback => (
+    is => 'rw',
+    isa => 'Bool'
+);
 
 =head1 NAME
 
@@ -21,17 +40,6 @@ for committed or rolledback.
 =head2 new
 
 Create a new DBIx::Class::QueryLog::Transcation
-
-=cut
-
-sub new {
-    my $proto = shift;
-    my $self = $proto->SUPER::new(@_);
-
-	$self->queries([]);
-
-	return $self;
-}
 
 =head2 bucket
 
@@ -77,24 +85,9 @@ sub time_elapsed {
 
 Add the provided query to this transactions list.
 
-=cut
-sub add_to_queries {
-	my $self = shift;
-	my $query = shift;
-
-	push(@{ $self->queries }, $query);
-}
-
 =head2 count
 
 Returns the number of queries in this Transaction
-
-=cut
-sub count {
-    my $self = shift;
-
-    return scalar(@{ $self->queries });
-}
 
 =head2 get_sorted_queries([ $sql ])
 
@@ -126,10 +119,13 @@ Cory G Watson, C<< <gphat at cpan.org> >>
 
 =head1 COPYRIGHT & LICENSE
 
-Copyright 2007 Cory G Watson, all rights reserved.
+Copyright 2009 Cory G Watson, all rights reserved.
 
 This program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.
 
 =cut
+
+__PACKAGE__->meta->make_immutable;
+
 1;
