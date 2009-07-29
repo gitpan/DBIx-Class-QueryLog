@@ -19,11 +19,11 @@ no_index:
     - t
 requires:
   Class::Accessor: 0
-  DBIx::Class: 0
+  DBIx::Class: 0.07000
   Moose: 0
   MooseX::AttributeHelpers: 0
   Test::More: 0
   Time::HiRes: 0
 resources:
   license: http://dev.perl.org/licenses/
-version: 1.2.0
+version: 1.2.1

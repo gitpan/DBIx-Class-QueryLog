@@ -54,7 +54,7 @@ DBIx::Class::QueryLog - Log queries for later analysis.
 
 =cut
 
-our $VERSION = '1.2.0';
+our $VERSION = '1.2.1';
 
 =head1 SYNOPSIS
 
