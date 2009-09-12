@@ -54,7 +54,7 @@ DBIx::Class::QueryLog - Log queries for later analysis.
 
 =cut
 
-our $VERSION = '1.2.1';
+our $VERSION = '1.2.2';
 
 =head1 SYNOPSIS
 
@@ -278,7 +278,5 @@ This program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.
 
 =cut
-
-__PACKAGE__->meta->make_immutable;
 
 1;
