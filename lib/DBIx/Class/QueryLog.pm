@@ -32,7 +32,7 @@ has log => (
 has passthrough => (
     is => 'rw',
     isa => 'Bool',
-    default => sub { 0 }
+    default => 0
 );
 
 before 'add_to_log' => sub {
@@ -54,7 +54,7 @@ DBIx::Class::QueryLog - Log queries for later analysis.
 
 =cut
 
-our $VERSION = '1.2.2';
+our $VERSION = '1.2.3';
 
 =head1 SYNOPSIS
 
@@ -89,7 +89,9 @@ See L<DBIx::Class::QueryLog::Analyzer> for options on digesting the results
 of a QueryLog session.
 
 If you wish to have the QueryLog collecting results, and the normal trace
-output of SQL queries from DBIx::Class, then set C<passthru> to 1
+output of SQL queries from DBIx::Class, then set C<passthrough> to 1
+
+  $ql->passthrough(1);
 
 =head1 BUCKETS
 

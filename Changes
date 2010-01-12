@@ -1,5 +1,10 @@
 Revision history for DBIx-Class-QueryLog
 
+1.2.3
+    - POD typo fixes (Thanks Nigel McNie)
+    - Version number change
+    - Some Moose cleanup
+
 1.2.2
     - Don't make QueryLog immutable, as it's ancestor isn't.
 
